@@ -1,0 +1,15 @@
+@SimpleLeadsAPI_HostAddress = https://localhost:7060
+
+GET {{SimpleLeadsAPI_HostAddress}}/api/leads
+Accept: application/json
+
+###
+POST {{SimpleLeadsAPI_HostAddress}}/api/leads
+Content-Type: application/json
+Accept: application/json
+
+{
+  "firstName": "Test",
+  "lastName": "Test",
+  "cellNumber": ""
+}
