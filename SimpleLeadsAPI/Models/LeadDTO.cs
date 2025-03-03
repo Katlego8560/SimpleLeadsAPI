@@ -2,12 +2,12 @@
 
 namespace SimpleLeadsAPI.Models
 {
-    public class Lead
+    public class LeadDTO
     {
         public Guid Id { get; set; }
 
         public string? FullName { get; set; }
-      
+    
         public string? ContactNumber { get; set; }
 
         public string? CurrentlyInsured { get; set; }
