@@ -1,0 +1,6 @@
+@Leads.External_HostAddress = http://localhost:5128
+
+GET {{Leads.External_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
