@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net.Http.Headers;
+using System.Text.Json;
+using Leads.External.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Leads.External.Controllers
@@ -10,11 +12,12 @@ namespace Leads.External.Controllers
         private readonly string InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
 
         [HttpGet]
-        public async Task<IActionResult> GetLead([FromQuery] Guid id)
+        public async Task<ActionResult<LeadDTO>> GetLead([FromQuery] Guid id)
         {
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(InternalAPIBaseUrl);
+           
 
                 try
                 {
@@ -23,7 +26,10 @@ namespace Leads.External.Controllers
                     if (response.IsSuccessStatusCode)
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
-                        return Ok(responseData);
+                        var lead = JsonSerializer.Deserialize<LeadDTO>(responseData,
+                            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                        return Ok(lead);
                     }
                     else
                     {
