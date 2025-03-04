@@ -18,7 +18,7 @@ namespace Leads.External.Controllers
 
                 try
                 {
-                    HttpResponseMessage response = await client.GetAsync($"?id={id}");
+                    var response = await client.GetAsync($"?id={id}");
 
                     if (response.IsSuccessStatusCode)
                     {
