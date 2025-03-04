@@ -7,19 +7,34 @@ namespace Leads.External.Controllers
     [ApiController]
     public class LeadsController : ControllerBase
     {
-        private readonly string baseUrl = "https://localhost:7060/api/leads/";
+        private readonly string InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
 
         [HttpGet]
-        public IActionResult GetLead([FromQuery] Guid id)
+        public async Task<IActionResult> GetLead([FromQuery] Guid id)
         {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(InternalAPIBaseUrl);
 
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(baseUrl);
-            client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync($"?id={id}");
 
-           // var response = client.GetAsync("?" + id);
-
-            return Ok();
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+                        return Ok(responseData);
+                    }
+                    else
+                    {
+                        return StatusCode((int)response.StatusCode, response.ReasonPhrase);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                }
+            }
         }
     }
 }
