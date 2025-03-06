@@ -29,6 +29,7 @@ namespace SimpleLeadsAPI.Controllers
                     string.Empty,
                     404
                     );
+
             }
             else
             {
@@ -48,8 +49,6 @@ namespace SimpleLeadsAPI.Controllers
                 {
                     return ValidationProblem(ModelState);
                 }
-
-          
 
                 var newLead = new Lead
                 {

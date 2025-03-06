@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Text.Json;
+﻿using System.Text.Json;
 using Leads.External.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,7 +11,7 @@ namespace Leads.External.Controllers
         private readonly string InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
 
         [HttpGet]
-        public async Task<ActionResult<LeadDTO>> GetLead([FromQuery] Guid id)
+        public async Task<IActionResult> GetLead([FromQuery] Guid id)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -21,13 +20,14 @@ namespace Leads.External.Controllers
 
                 try
                 {
-                    var response = await client.GetAsync($"?id={id}");
+                   using var response = await client.GetAsync($"?id={id}");
 
                     if (response.IsSuccessStatusCode)
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
+
                         var lead = JsonSerializer.Deserialize<LeadDTO>(responseData,
-                            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+                           new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
                         return Ok(lead);
                     }
@@ -36,9 +36,41 @@ namespace Leads.External.Controllers
                         return StatusCode((int)response.StatusCode, response.ReasonPhrase);
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return StatusCode(500, $"Internal server error: {ex.Message}");
+                    return StatusCode(500, "Internal server error");
+                }
+            }
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> SaveLead([FromBody] CreateLeadDto model)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(InternalAPIBaseUrl);
+
+                try
+                {
+                     using var response = await client.PostAsJsonAsync(InternalAPIBaseUrl, model);
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+
+                        var lead = JsonSerializer.Deserialize<CreatedLeadResponseDto>(responseData,
+                           new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                        return CreatedAtAction(nameof(SaveLead), lead);
+
+                    }
+                    else
+                    {
+                        return StatusCode((int)response.StatusCode, response.ReasonPhrase);
+                    }
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, "Internal server error");
                 }
             }
         }
