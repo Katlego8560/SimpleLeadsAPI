@@ -1,3 +1,4 @@
+using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
 using SimpleLeadsAPI.Services;
 
@@ -7,6 +8,8 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseInMemoryDatabase("Leads"));
+
+builder.Services.AddEasyNetQ("host=localhost").UseSystemTextJson();
 
 var app = builder.Build();
 

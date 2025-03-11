@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using EasyNetQ;
 using Leads.External.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,9 +7,10 @@ namespace Leads.External.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LeadsController : ControllerBase
+    public class LeadsController(IBus bus) : ControllerBase
     {
         private readonly string InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
+        private readonly IBus _Bus = bus;
 
         [HttpGet]
         public async Task<IActionResult> GetLead([FromQuery] Guid id)
@@ -44,7 +46,7 @@ namespace Leads.External.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> SaveLead([FromBody] CreateLeadDto model)
+        public async Task<IActionResult> SaveLead([FromBody] CreateLeadDto model)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -73,6 +75,21 @@ namespace Leads.External.Controllers
                     return StatusCode(500, "Internal server error");
                 }
             }
+        }
+
+        [HttpPost("enqueue")]
+        public async Task<IActionResult> EnqueueLead([FromBody] CreateLeadDto model)
+        {
+            try
+            {
+                await _Bus.PubSub.PublishAsync(model);
+
+                return Accepted();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Internal server error");
+            }  
         }
     }
 }
