@@ -1,5 +1,6 @@
 using EasyNetQ;
 using Microsoft.EntityFrameworkCore;
+using SimpleLeadsAPI;
 using SimpleLeadsAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(
     options => options.UseInMemoryDatabase("Leads"));
 
 builder.Services.AddEasyNetQ("host=localhost").UseSystemTextJson();
+builder.Services.AddHostedService<QueueProcessor>();
 
 var app = builder.Build();
 

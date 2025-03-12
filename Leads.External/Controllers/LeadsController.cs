@@ -9,20 +9,19 @@ namespace Leads.External.Controllers
     [ApiController]
     public class LeadsController(IBus bus) : ControllerBase
     {
-        private readonly string InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
+        private readonly string _InternalAPIBaseUrl = "https://localhost:7060/api/leads/";
         private readonly IBus _Bus = bus;
 
         [HttpGet]
         public async Task<IActionResult> GetLead([FromQuery] Guid id)
         {
-            using (HttpClient client = new HttpClient())
+            using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(InternalAPIBaseUrl);
-           
+                client.BaseAddress = new Uri(_InternalAPIBaseUrl);
 
                 try
                 {
-                   using var response = await client.GetAsync($"?id={id}");
+                    using var response = await client.GetAsync($"?id={id}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -50,11 +49,11 @@ namespace Leads.External.Controllers
         {
             using (HttpClient client = new HttpClient())
             {
-                client.BaseAddress = new Uri(InternalAPIBaseUrl);
+                client.BaseAddress = new Uri(_InternalAPIBaseUrl);
 
                 try
                 {
-                     using var response = await client.PostAsJsonAsync(InternalAPIBaseUrl, model);
+                    using var response = await client.PostAsJsonAsync(_InternalAPIBaseUrl, model);
                     if (response.IsSuccessStatusCode)
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
@@ -62,8 +61,7 @@ namespace Leads.External.Controllers
                         var lead = JsonSerializer.Deserialize<CreatedLeadResponseDto>(responseData,
                            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
-                        return CreatedAtAction(nameof(SaveLead), lead);
-
+                        return CreatedAtAction(nameof(GetLead), lead);
                     }
                     else
                     {
@@ -82,14 +80,24 @@ namespace Leads.External.Controllers
         {
             try
             {
-                await _Bus.PubSub.PublishAsync(model);
+                await _Bus.PubSub.PublishAsync(
+                    new LeadDTO
+                    {
+                        FullName = model.FullName,
+                        ContactNumber = model.ContactNumber,
+                        CurrentlyInsured = model.CurrentlyInsured,
+                        OtherInsurer = model.OtherInsurer,
+                        Insurer = model.Insurer,
+                    }
+                );
+                
 
                 return Accepted();
             }
             catch (Exception)
             {
                 return StatusCode(500, "Internal server error");
-            }  
+            }
         }
     }
 }
