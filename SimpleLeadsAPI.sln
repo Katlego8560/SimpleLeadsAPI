@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleLeadsAPI", "SimpleLea
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Leads.External", "Leads.External\Leads.External.csproj", "{2CC987A5-633B-47CE-A1D9-5A4A569E3249}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messages", "Messages\Messages.csproj", "{F31669BE-8973-421F-9623-DF5EC449603D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{2CC987A5-633B-47CE-A1D9-5A4A569E3249}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CC987A5-633B-47CE-A1D9-5A4A569E3249}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CC987A5-633B-47CE-A1D9-5A4A569E3249}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F31669BE-8973-421F-9623-DF5EC449603D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F31669BE-8973-421F-9623-DF5EC449603D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F31669BE-8973-421F-9623-DF5EC449603D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F31669BE-8973-421F-9623-DF5EC449603D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

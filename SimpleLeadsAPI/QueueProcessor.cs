@@ -1,4 +1,5 @@
 ﻿using EasyNetQ;
+using Messages;
 using SimpleLeadsAPI.Models;
 using SimpleLeadsAPI.Services;
 
@@ -14,11 +15,12 @@ namespace SimpleLeadsAPI
             IBus bus = scope.ServiceProvider.GetRequiredService<IBus>();
 
             ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            await bus.PubSub.SubscribeAsync<LeadDTO>("new-lead", HandleNewLeadAsync);
+            await bus.PubSub.SubscribeAsync<LeadMessage>("new-lead", HandleNewLeadAsync);
         }
 
-        private void HandleNewLeadAsync(LeadDTO dto)
+        private void HandleNewLeadAsync(LeadMessage dto)
         {
+            Console.WriteLine("Lead received");
             Console.WriteLine(dto.ContactNumber);
             Console.WriteLine(dto.FullName);
         }
