@@ -6,31 +6,32 @@ using SimpleLeadsAPI.Services;
 
 namespace SimpleLeadsAPI
 {
-    public class QueueProcessor : BackgroundService
+    public class QueueProcessor(IServiceProvider serviceProvider) : BackgroundService
     {
-        private readonly IServiceProvider _ServiceProvider;
-        private readonly ApplicationDbContext _Context;
-
-        public QueueProcessor(IServiceProvider serviceProvider, ApplicationDbContext context)
-        {
-            _ServiceProvider = serviceProvider;
-            _Context = context;
-        }
+        private readonly IServiceProvider _ServiceProvider = serviceProvider;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             IServiceScope scope = _ServiceProvider.CreateScope();
             IBus bus = scope.ServiceProvider.GetRequiredService<IBus>();
-
             ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
             await bus.PubSub.SubscribeAsync<LeadMessage>("new-lead", message => {
-                Console.WriteLine("Lead received");
-                Console.WriteLine(message.ContactNumber);
-                Console.WriteLine(message.FullName);
+                
+                dbContext.Leads.Add(new Lead()
+                {
+                    Id = Guid.NewGuid(),
+                    FullName = message.FullName,
+                    ContactNumber = message.ContactNumber,
+                    CurrentlyInsured = message.CurrentlyInsured,
+                    OtherInsurer = message.OtherInsurer,
+                    Insurer = message.Insurer,
+                });
+
+                dbContext.SaveChanges();
             });
 
-            _Context.Leads.Add(new Lead()); 
-            _Context.SaveChanges();
+        
         }
     }
 }
