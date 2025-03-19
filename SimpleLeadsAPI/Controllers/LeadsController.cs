@@ -16,11 +16,24 @@ namespace SimpleLeadsAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<LeadDTO> GetLead([FromQuery] Guid id)
+        public ActionResult<LeadDTO> GetLead([FromQuery] GetLeadQueryDto queryDto)
         {
-            var lead = _Context
+            var leadQuery = _Context
                 .Leads
-                .FirstOrDefault(item => item.Id == id);
+                .AsQueryable();
+
+            if (queryDto.Id.HasValue)
+            {
+                leadQuery = leadQuery.Where(item => item.Id == queryDto.Id);
+            }
+
+            if (!string.IsNullOrWhiteSpace(queryDto.ContactNumber))
+            {
+                leadQuery = leadQuery.Where(item => item.ContactNumber == queryDto.ContactNumber.Trim());
+
+            }
+
+            var lead = leadQuery.FirstOrDefault();
 
             if (lead == null)
             {
@@ -36,7 +49,6 @@ namespace SimpleLeadsAPI.Controllers
                 return Ok(lead);
             }
         }
-
 
         [HttpPost]
         public ActionResult<LeadDTO> SaveLead([FromBody] CreateLeadDto model)

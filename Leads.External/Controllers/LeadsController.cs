@@ -5,6 +5,7 @@ using Messages;
 using Microsoft.AspNetCore.Mvc;
 using SimpleLeadsAPI.Models;
 
+
 namespace Leads.External.Controllers
 {
     [Route("api/[controller]")]
@@ -45,10 +46,42 @@ namespace Leads.External.Controllers
                 }
             }
         }
-
-        [HttpPost]
-        public async Task<IActionResult> SaveLead([FromBody] CreateLeadDto model)
+        [HttpGet ("data")]
+        public async Task<IActionResult> GetLead([FromQuery] string ContactNumber)
         {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(_InternalAPIBaseUrl);
+
+                try
+                {
+                    using var response = await client.GetAsync($"?contactNumber={ContactNumber}");
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadAsStringAsync();
+
+                        var lead = JsonSerializer.Deserialize<LeadDTO>(responseData,
+                           new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+
+                        return Ok(lead);
+                    }
+                    else
+                    {
+                        return StatusCode((int)response.StatusCode, response.ReasonPhrase);
+                    }
+                }
+                catch (Exception)
+                {
+                    return StatusCode(500, "Internal server error");
+                }
+            }
+
+        }
+
+          [HttpPost]
+          public async Task<IActionResult> SaveLead([FromBody] CreateLeadDto model)
+          {
             using (HttpClient client = new HttpClient())
             {
                 client.BaseAddress = new Uri(_InternalAPIBaseUrl);

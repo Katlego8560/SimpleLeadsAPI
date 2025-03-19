@@ -1,6 +1,5 @@
 ﻿using EasyNetQ;
 using Messages;
-using SimpleLeadsAPI.Controllers;
 using SimpleLeadsAPI.Models;
 using SimpleLeadsAPI.Services;
 
@@ -16,8 +15,8 @@ namespace SimpleLeadsAPI
             IBus bus = scope.ServiceProvider.GetRequiredService<IBus>();
             ApplicationDbContext dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-            await bus.PubSub.SubscribeAsync<LeadMessage>("new-lead", message => {
-                
+            await bus.PubSub.SubscribeAsync<LeadMessage>("new-lead", message => 
+            {
                 dbContext.Leads.Add(new Lead()
                 {
                     Id = Guid.NewGuid(),
