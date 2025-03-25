@@ -7,8 +7,8 @@ using SimpleLeadsAPI.Models;
 
 
 namespace Leads.External.Controllers
-{
-    [Route("api/[controller]")]
+{ 
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class LeadsController(IBus bus) : ControllerBase
     {
@@ -16,7 +16,7 @@ namespace Leads.External.Controllers
         private readonly IBus _Bus = bus;
 
         [HttpGet]
-        public async Task<IActionResult> GetLead([FromQuery] Guid id)
+        public async Task<IActionResult> GetLeadById([FromQuery] Guid id)
         {
              using (var client = new HttpClient())
             {
@@ -24,7 +24,7 @@ namespace Leads.External.Controllers
            
                 try
                 {
-                   using var response = await client.GetAsync($"?id={id}");
+                   using var response = await client.GetAsync($"GetLead/?id={id}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -46,8 +46,9 @@ namespace Leads.External.Controllers
                 }
             }
         }
-        [HttpGet ("data")]
-        public async Task<IActionResult> GetLead([FromQuery] string ContactNumber)
+
+        [HttpGet]
+        public async Task<IActionResult> GetLeadByContactNumber([FromQuery] string contactNumber)
         {
             using (var client = new HttpClient())
             {
@@ -55,7 +56,7 @@ namespace Leads.External.Controllers
 
                 try
                 {
-                    using var response = await client.GetAsync($"?contactNumber={ContactNumber}");
+                    using var response = await client.GetAsync($"GetLead/?contactNumber={contactNumber}");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -88,7 +89,7 @@ namespace Leads.External.Controllers
 
                 try
                 {
-                    using var response = await client.PostAsJsonAsync(_InternalAPIBaseUrl, model);
+                    using var response = await client.PostAsJsonAsync(_InternalAPIBaseUrl+ "SaveLead", model);
                     if (response.IsSuccessStatusCode)
                     {
                         var responseData = await response.Content.ReadAsStringAsync();
@@ -96,7 +97,7 @@ namespace Leads.External.Controllers
                         var lead = JsonSerializer.Deserialize<CreatedLeadResponseDto>(responseData,
                            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
 
-                        return CreatedAtAction(nameof(GetLead), lead);
+                        return CreatedAtAction(nameof(GetLeadById), lead);
                     }
                     else
                     {
@@ -110,7 +111,7 @@ namespace Leads.External.Controllers
             }
         }
 
-        [HttpPost("enqueue")]
+        [HttpPost]
         public async Task<IActionResult> EnqueueLead([FromBody] CreateLeadDto model)
         {
             try

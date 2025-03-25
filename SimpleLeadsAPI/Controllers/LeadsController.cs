@@ -6,7 +6,7 @@ using SimpleLeadsAPI.Services;
 namespace SimpleLeadsAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     public class LeadsController : ControllerBase
     {
         private readonly ApplicationDbContext _Context;
