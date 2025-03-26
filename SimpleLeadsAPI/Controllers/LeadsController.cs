@@ -71,6 +71,7 @@ namespace SimpleLeadsAPI.Controllers
                     CurrentlyInsured = model.CurrentlyInsured,
                     OtherInsurer = model.OtherInsurer,
                     Insurer = model.Insurer,
+                    DateCreated = DateTime.Now,
                 };
 
                 _Context.Leads.Add(newLead);

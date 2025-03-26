@@ -15,5 +15,6 @@ namespace SimpleLeadsAPI.DTOs
         public string? Insurer { get; set; }
 
         public string? OtherInsurer { get; set; }
+        public DateTime? DateCreated { get; set; }
     }
 }

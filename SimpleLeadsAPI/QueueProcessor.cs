@@ -25,6 +25,7 @@ namespace SimpleLeadsAPI
                     CurrentlyInsured = message.CurrentlyInsured,
                     OtherInsurer = message.OtherInsurer,
                     Insurer = message.Insurer,
+                    DateCreated = DateTime.Now
                 });
 
                 dbContext.SaveChanges();
