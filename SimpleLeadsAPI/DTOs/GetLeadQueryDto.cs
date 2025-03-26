@@ -1,4 +1,4 @@
-﻿namespace SimpleLeadsAPI.Models
+﻿namespace SimpleLeadsAPI.DTOs
 {
     public class GetLeadQueryDto
     {

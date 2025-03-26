@@ -14,6 +14,7 @@ namespace SimpleLeadsAPI.Models
 
         public string? Insurer {  get; set; }
 
+        [MaxLength(12)]
         public string? OtherInsurer {  get; set; }
     }
 }

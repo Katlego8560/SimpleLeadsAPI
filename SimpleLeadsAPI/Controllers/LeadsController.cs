@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SimpleLeadsAPI.DTOs;
 using SimpleLeadsAPI.Models;
 using SimpleLeadsAPI.Services;
 
